@@ -43,6 +43,7 @@ void setFullScreen(HWND hwnd, bool fullscreen)
         SendMessage(hwnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
     }
     else {
+        if (!g_saved_window_info.maximized) SendMessage(hwnd, WM_SYSCOMMAND, SC_RESTORE, 0);
         SetWindowLong(hwnd, GWL_STYLE, g_saved_window_info.style & ~(WS_CAPTION | WS_THICKFRAME));
         SetWindowLong(hwnd, GWL_EXSTYLE, g_saved_window_info.ex_style);
         SetWindowPlacement(hwnd, &g_saved_window_info.placement);
@@ -52,8 +53,6 @@ void setFullScreen(HWND hwnd, bool fullscreen)
         RECT bounds;
         GetWindowRect(hwnd, &bounds);
         SetWindowPos(hwnd, 0, bounds.left, bounds.top, bounds.right - bounds.left, bounds.bottom - bounds.top, SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
-            
-        if (!g_saved_window_info.maximized) SendMessage(hwnd, WM_SYSCOMMAND, SC_RESTORE, 0);
     }
 }
 
