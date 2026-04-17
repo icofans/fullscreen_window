@@ -44,7 +44,7 @@ void setFullScreen(HWND hwnd, bool fullscreen)
     }
     else {
         if (!g_saved_window_info.maximized) SendMessage(hwnd, WM_SYSCOMMAND, SC_RESTORE, 0);
-        SetWindowLong(hwnd, GWL_STYLE, g_saved_window_info.style);
+        SetWindowLong(hwnd, GWL_STYLE, g_saved_window_info.style & ~(WS_CAPTION | WS_THICKFRAME)));
         SetWindowLong(hwnd, GWL_EXSTYLE, g_saved_window_info.ex_style);
         SetWindowPlacement(hwnd, &g_saved_window_info.placement);
 
