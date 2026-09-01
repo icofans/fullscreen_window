@@ -40,7 +40,22 @@ void setFullScreen(HWND hwnd, bool fullscreen)
             g_saved_window_info.ex_style | WS_EX_TOPMOST & ~(WS_EX_DLGMODALFRAME |
                 WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE));
 
-        SendMessage(hwnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
+        MONITORINFO monitor_info;
+        monitor_info.cbSize = sizeof(MONITORINFO);
+        HMONITOR monitor = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+        if (monitor != nullptr && GetMonitorInfo(monitor, &monitor_info)) {
+            SetWindowPos(
+                hwnd,
+                HWND_TOPMOST,
+                monitor_info.rcMonitor.left,
+                monitor_info.rcMonitor.top,
+                monitor_info.rcMonitor.right - monitor_info.rcMonitor.left,
+                monitor_info.rcMonitor.bottom - monitor_info.rcMonitor.top,
+                SWP_SHOWWINDOW | SWP_FRAMECHANGED);
+        } else {
+            // Keep a fallback in case monitor information is temporarily unavailable.
+            SendMessage(hwnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
+        }
     }
     else {
         if (!g_saved_window_info.maximized) SendMessage(hwnd, WM_SYSCOMMAND, SC_RESTORE, 0);
